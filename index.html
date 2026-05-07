@@ -574,8 +574,12 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>OT (Orden de Trabajo)</label>
+                        <input type="text" id="ot" placeholder="Número de OT">
+                    </div>
+                    <div class="form-group">
                         <label>Aviso</label>
-                        <input type="text" id="aviso" placeholder="Número de Orden de Trabajo">
+                        <input type="text" id="aviso" placeholder="Número de Aviso">
                     </div>
                     <div class="form-group">
                         <label>📅 Fecha de RCA (DD.MM.YYYY)</label>
@@ -966,6 +970,7 @@
             const lineaId = document.getElementById('lineaId').value.trim();
             const lineaNombre = document.getElementById('lineaNombre').value.trim();
             const lineaColor = document.getElementById('lineaColor').value;
+            const ot = document.getElementById('ot').value.trim();
             const aviso = document.getElementById('aviso').value.trim();
             const fechaRCA = document.getElementById('fechaRCA').value.trim();
             const tipoFalla = document.getElementById('tipoFalla').value;
@@ -979,6 +984,7 @@
             
             const lineaExistente = lineas.find(l => l.id === lineaId);
             if (lineaExistente) {
+                if (ot) lineaExistente.ot = ot;
                 if (aviso) lineaExistente.aviso = aviso;
                 if (fechaRCA) lineaExistente.fechaRCA = fechaRCA;
                 
@@ -993,6 +999,7 @@
                     id: lineaId,
                     nombre: lineaNombre,
                     color: lineaColor,
+                    ot: ot || '',
                     aviso: aviso || '',
                     fechaRCA: fechaRCA,
                     fallas: [{
@@ -1012,6 +1019,7 @@
             document.getElementById('lineaId').value = '';
             document.getElementById('lineaNombre').value = '';
             document.getElementById('lineaColor').value = '';
+            document.getElementById('ot').value = '';
             document.getElementById('aviso').value = '';
             document.getElementById('fechaRCA').value = '';
             document.getElementById('tipoFalla').value = 'Fallas Mec. Emp.';
@@ -1146,6 +1154,10 @@
                     <label style="display: block; margin-bottom: 5px; font-weight: 500;">Fecha de RCA (DD.MM.YYYY)</label>
                     <input type="text" id="editFechaRCA" value="${linea.fechaRCA || ''}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
                 </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">OT</label>
+                    <input type="text" id="editOT" value="${linea.ot || ''}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 5px; font-weight: 500;">Aviso</label>
                     <input type="text" id="editAviso" value="${linea.aviso || ''}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
@@ -1167,6 +1179,7 @@
                     return;
                 }
                 linea.fechaRCA = nuevaFechaRCA;
+                linea.ot = document.getElementById('editOT').value.trim();
                 linea.aviso = document.getElementById('editAviso').value.trim();
                 guardarDatosFirestore();
                 document.body.removeChild(modal);
@@ -1262,9 +1275,10 @@
                                 <span style="flex: 1;">${falla.titulo}</span>
                                 ${mostrarAcciones ? `<button class="btn-edit" onclick="editarFalla('${linea.id}', ${fallaIdx})" title="Editar nombre de la falla">✏️</button>` : ''}
                             </div>
-                            ${linea.fechaRCA || linea.aviso ? `
+                            ${linea.fechaRCA || linea.ot || linea.aviso ? `
                             <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px; align-items: center;">
                                 ${linea.fechaRCA ? `<span style="background: #9b59b6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">📅 Fecha RCA: ${linea.fechaRCA}</span>` : ''}
+                                ${linea.ot ? `<span style="background: #3498db; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">🔧 OT: ${linea.ot}</span>` : ''}
                                 ${linea.aviso ? `<span style="background: #17a2b8; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">📋 Aviso: ${linea.aviso}</span>` : ''}
                                 ${mostrarAcciones ? `<button class="btn-edit" onclick="editarInfoRCA('${linea.id}')" title="Editar información de RCA" style="margin-left: auto;">✏️</button>` : ''}
                             </div>
