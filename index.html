@@ -570,15 +570,12 @@
                             <option value="Verde">Verde</option>
                             <option value="Azul">Azul</option>
                             <option value="Morado">Morado</option>
+                            <option value="Rosa">Rosa</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Aviso</label>
                         <input type="text" id="aviso" placeholder="Número de Orden de Trabajo">
-                    </div>
-                    <div class="form-group">
-                        <label>Número de RCA</label>
-                        <input type="text" id="numeroRCA" placeholder="RCA-2024-001">
                     </div>
                     <div class="form-group">
                         <label>📅 Fecha de RCA (DD.MM.YYYY)</label>
@@ -970,7 +967,6 @@
             const lineaNombre = document.getElementById('lineaNombre').value.trim();
             const lineaColor = document.getElementById('lineaColor').value;
             const aviso = document.getElementById('aviso').value.trim();
-            const numeroRCA = document.getElementById('numeroRCA').value.trim();
             const fechaRCA = document.getElementById('fechaRCA').value.trim();
             const tipoFalla = document.getElementById('tipoFalla').value;
             const tiempoMuerto = parseFloat(document.getElementById('tiempoMuerto').value) || 0;
@@ -984,7 +980,6 @@
             const lineaExistente = lineas.find(l => l.id === lineaId);
             if (lineaExistente) {
                 if (aviso) lineaExistente.aviso = aviso;
-                if (numeroRCA) lineaExistente.numeroRCA = numeroRCA;
                 if (fechaRCA) lineaExistente.fechaRCA = fechaRCA;
                 
                 lineaExistente.fallas.push({
@@ -999,7 +994,6 @@
                     nombre: lineaNombre,
                     color: lineaColor,
                     aviso: aviso || '',
-                    numeroRCA: numeroRCA || '',
                     fechaRCA: fechaRCA,
                     fallas: [{
                         titulo: fallaTitulo,
@@ -1019,7 +1013,6 @@
             document.getElementById('lineaNombre').value = '';
             document.getElementById('lineaColor').value = '';
             document.getElementById('aviso').value = '';
-            document.getElementById('numeroRCA').value = '';
             document.getElementById('fechaRCA').value = '';
             document.getElementById('tipoFalla').value = 'Fallas Mec. Emp.';
             document.getElementById('tiempoMuerto').value = '';
@@ -1153,13 +1146,9 @@
                     <label style="display: block; margin-bottom: 5px; font-weight: 500;">Fecha de RCA (DD.MM.YYYY)</label>
                     <input type="text" id="editFechaRCA" value="${linea.fechaRCA || ''}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
                 </div>
-                <div style="margin-bottom: 15px;">
+                <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 5px; font-weight: 500;">Aviso</label>
                     <input type="text" id="editAviso" value="${linea.aviso || ''}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Número de RCA</label>
-                    <input type="text" id="editNumeroRCA" value="${linea.numeroRCA || ''}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
                     <button id="btnCancelarRCA" style="padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #6c757d; color: white;">Cancelar</button>
@@ -1179,7 +1168,6 @@
                 }
                 linea.fechaRCA = nuevaFechaRCA;
                 linea.aviso = document.getElementById('editAviso').value.trim();
-                linea.numeroRCA = document.getElementById('editNumeroRCA').value.trim();
                 guardarDatosFirestore();
                 document.body.removeChild(modal);
             };
@@ -1226,7 +1214,8 @@
                     'Rojo': '#f44336',
                     'Verde': '#4CAF50',
                     'Azul': '#2196F3',
-                    'Morado': '#9C27B0'
+                    'Morado': '#9C27B0',
+                    'Rosa': '#E91E63'
                 };
                 const colorHeader = colorMap[linea.color] || '#FF9800';
                 
@@ -1273,11 +1262,10 @@
                                 <span style="flex: 1;">${falla.titulo}</span>
                                 ${mostrarAcciones ? `<button class="btn-edit" onclick="editarFalla('${linea.id}', ${fallaIdx})" title="Editar nombre de la falla">✏️</button>` : ''}
                             </div>
-                            ${linea.fechaRCA || linea.aviso || linea.numeroRCA ? `
+                            ${linea.fechaRCA || linea.aviso ? `
                             <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px; align-items: center;">
                                 ${linea.fechaRCA ? `<span style="background: #9b59b6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">📅 Fecha RCA: ${linea.fechaRCA}</span>` : ''}
                                 ${linea.aviso ? `<span style="background: #17a2b8; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">📋 Aviso: ${linea.aviso}</span>` : ''}
-                                ${linea.numeroRCA ? `<span style="background: #6f42c1; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">📊 RCA: ${linea.numeroRCA}</span>` : ''}
                                 ${mostrarAcciones ? `<button class="btn-edit" onclick="editarInfoRCA('${linea.id}')" title="Editar información de RCA" style="margin-left: auto;">✏️</button>` : ''}
                             </div>
                             ` : ''}
@@ -1388,6 +1376,16 @@
             
             // Agrupar por línea
             const tiemposPorLinea = {};
+            const coloresPorLinea = [];
+            const colorMap = {
+                'Naranja': '#FF9800',
+                'Rojo': '#f44336',
+                'Verde': '#4CAF50',
+                'Azul': '#2196F3',
+                'Morado': '#9C27B0',
+                'Rosa': '#E91E63'
+            };
+            
             lineasData.forEach(linea => {
                 let totalLinea = 0;
                 linea.fallas.forEach(falla => {
@@ -1395,6 +1393,7 @@
                 });
                 if (totalLinea > 0) {
                     tiemposPorLinea[`${linea.id} (${linea.nombre})`] = totalLinea;
+                    coloresPorLinea.push(colorMap[linea.color] || '#FF9800');
                 }
             });
             
@@ -1440,7 +1439,7 @@
                     labels: Object.keys(tiemposPorLinea),
                     datasets: [{
                         data: Object.values(tiemposPorLinea),
-                        backgroundColor: ['#FF9800', '#f44336', '#4CAF50', '#2196F3', '#9C27B0', '#FFC107', '#00BCD4']
+                        backgroundColor: coloresPorLinea
                     }]
                 },
                 options: {
