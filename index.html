@@ -1275,6 +1275,10 @@
                                 <span style="flex: 1;">${falla.titulo}</span>
                                 ${mostrarAcciones ? `<button class="btn-edit" onclick="editarFalla('${linea.id}', ${fallaIdx})" title="Editar nombre de la falla">✏️</button>` : ''}
                             </div>
+                            <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px; align-items: center;">
+                                ${falla.tiempoMuerto ? `<span style="background: #e74c3c; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">⏱️ Tiempo Muerto: ${falla.tiempoMuerto} hrs</span>` : ''}
+                                ${falla.tipoFalla ? `<span style="background: #f39c12; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">🔧 ${falla.tipoFalla}</span>` : ''}
+                            </div>
                             ${linea.fechaRCA || linea.ot || linea.aviso ? `
                             <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px; align-items: center;">
                                 ${linea.fechaRCA ? `<span style="background: #9b59b6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">📅 Fecha RCA: ${linea.fechaRCA}</span>` : ''}
